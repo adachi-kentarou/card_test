@@ -5,13 +5,6 @@ var url = require('url');
 
 const port = process.env.PORT || 3001;
 
-const options = {
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
-};
-
-
-
 const Canvas = require('canvas');//npm i canvas
  
 const canvas = Canvas.createCanvas(1920, 1080);
@@ -44,28 +37,6 @@ function hsvToRgb(H,S,V) {
 
 
 const server = https.createServer(function(req,res){
-//const server = https.createServer(options, function(req,res){
-	/*
-	var ext = path.extname(req.url).toLowerCase();
-	
-	switch(ext)
-	{
-		case ".html":
-			fs.readFile("." + req.url, 'utf-8', function(err, data){
-				res.writeHead(200, {'Content-Type': 'text/html'});
-				res.write(data);
-				res.end();
-			});
-			break;
-		case ".jpg":			
-			res.writeHead(200, {
-				'Content-Type': `image/jpg; charset=utf-8`  //　← ここがキモ！
-			});
-			var image = fs.readFileSync("." + req.url, "binary"); // ← ファイルpathはその環境に合わせてください
-			res.end(image, "binary");
-			break;
-	}
-	*/
 	
 	var filePath = '.' + req.url.split("?")[0];
     if (filePath == './') {
