@@ -5,7 +5,6 @@
   "main": "app.js",
   "dependencies": {
     "canvas": "^2.10.1",
-	"chartjs-node-canvas": "^4.1.6",
     "fs": "0.0.1-security",
     "http": "0.0.1-security",
     "openssl": "^2.0.0",
@@ -15,11 +14,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node app.js"
+    "test": "node app.js"
   },
-  "author": "Render Developers",
-  "license": "MIT",
-  "engines": {
-    "node": ">=14"
-  }
+  "author": "",
+  "license": "MIT"
 }
