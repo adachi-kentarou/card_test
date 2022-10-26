@@ -123,7 +123,7 @@ const server = https.createServer(function(req,res){
 			{
 				console.log(content);
 				var html = Buffer.from(content, 'base64').toString();
-				html = html.replace('****', 'aaaaaaaaa');
+				html = html.replace('****', 'bbbbb');
 				content = Buffer.from(html).toString('utf-8');
 			}
             res.writeHead(200, { 'Content-Type': contentType });
