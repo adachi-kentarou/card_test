@@ -14,8 +14,11 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "node app.js"
+    "start": "node app.js"
   },
-  "author": "",
-  "license": "MIT"
+  "author": "Render Developers",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  }
 }
