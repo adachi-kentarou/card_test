@@ -9,6 +9,9 @@ const Canvas = require('canvas');//npm i canvas
  
 const canvas = Canvas.createCanvas(1920, 1080);
 
+const AsyncLock = require('async-lock');
+const lock = new AsyncLock();
+
 //Ref: https://qiita.com/hachisukansw/items/633d1bf6baf008e82847
 function hsvToRgb(H,S,V) {
   //https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
@@ -38,24 +41,28 @@ function hsvToRgb(H,S,V) {
 
 const server = https.createServer(function(req,res){
 	
+	var color = "000000";
+	
 	var filePath = '.' + req.url.split("?")[0];
-    if (filePath == './') {
+    
+	if (filePath == './') {
         filePath = './index.html';
     }
-	else if (filePath == './imgtest')
+	else if (/^\.\/[A-Z0-9]{6}$/.test(filePath) == true)
+	{
+		
+		color = filePath.match(/[A-Z0-9]{6}/)[0];
+		filePath = './index.html';
+	}
+	else if (/^\.\/img\/[A-Z0-9]{6}$/.test(filePath) == true)
 	{
 		//動的画像生成
 		var url_parse = url.parse(req.url, true);
 		//if (Object.keys(url_parse.query).length != 0)
 		{
-			if (Object.keys(url_parse.query).length == 0)
-			{
-				console.log(url_parse);
-				url_parse.query = {id:"FF0000"};
-			}
 			
-			//getパラメータ処理
-			var color = url_parse.query.id.toUpperCase();
+			//パラメータ処理
+			color = filePath.match(/[A-Z0-9]{6}/)[0];
 			var r = parseInt(color.substr(0,2),16);
 			var g　= parseInt(color.substr(2,2),16);
 			var b = parseInt(color.substr(4,2),16);
@@ -66,7 +73,7 @@ const server = https.createServer(function(req,res){
 			ctx.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';  //RGBで入力するとき
 			//ctx.fillStyle = hsvToRgb(34, 0.71, 1);  //HSVで入力するとき
 			ctx.fillRect(0, 0, 1920, 1080);　　//塗りつぶす
-			 
+			
 			// Base64で出力も行うとき
 			// var base64 = canvas.toDataURL("image/png");
 			// console.log(base64);
@@ -121,9 +128,11 @@ const server = https.createServer(function(req,res){
         else {
 			if(contentType == "text/html")
 			{
-				console.log(content);
+				
 				var html = Buffer.from(content, 'base64').toString();
-				html = html.replace('****', 'bbbbb');
+				
+				html = html.replace(/hogehoge/g, color);
+				
 				content = Buffer.from(html).toString('utf-8');
 			}
             res.writeHead(200, { 'Content-Type': contentType });
