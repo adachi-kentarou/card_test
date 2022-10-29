@@ -8,7 +8,7 @@
     "canvas": "^2.10.1",
     "fs": "0.0.1-security",
     "http": "0.0.1-security",
-    "mp4-h264": "^1.0.9",
+    "mp4-h264": "^1.0.6",
     "openssl": "^2.0.0",
     "openssl-nodejs": "^1.0.5",
     "path": "^0.12.7",
