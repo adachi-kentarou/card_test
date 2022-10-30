@@ -4,8 +4,8 @@ const path = require('path');
 
 var url = require('url');
 
-const loadEncoder = require("mp4-h264");
-
+//const loadEncoder = require("mp4-h264");
+const loadEncoder = require("./mp4-h264/mp4-encoder.node.js");
 const port = process.env.PORT || 3001;
 
 
@@ -279,7 +279,7 @@ const server = https.createServer(async function(req,res){
 				 
 				//動的動画生成
 				// 四角形描画
-				ctx2.fillStyle = 'rgba(64, 128, 64, 0.1)';  //RGBで入力するとき
+				ctx2.fillStyle = 'rgba(64, 128, 256, 1)';  //RGBで入力するとき
 				ctx2.fillRect(0, 0, 200, 200);　　//塗りつぶす
 				
 				ctx2.fillStyle = 'rgba(255,0,0,1)';
@@ -294,7 +294,7 @@ const server = https.createServer(async function(req,res){
 				});
 				
 				let str = "";
-				for (let i = 0; i < 10; i++)
+				for (let i = 0; i < 20; i++)
 				{
 					//画像加工
 					ctx2.fillText(str, 0, 100);
