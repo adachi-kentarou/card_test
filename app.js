@@ -26,6 +26,8 @@ const canvas2 = createCanvas(200, 200);
 const AsyncLock = require('async-lock');
 const lock = new AsyncLock();
 
+const punycode = require('punycode');
+
 //Ref: https://qiita.com/hachisukansw/items/633d1bf6baf008e82847
 function hsvToRgb(H,S,V) {
   //https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
@@ -58,97 +60,38 @@ image.src = './test.jpg';  // ここはURLでも良い（loadImageと一緒）
 const server = https.createServer(async function(req,res){
 	
 	var color = "000000";
+	var msg = "";
 	
 	var filePath = '.' + req.url.split("?")[0];
     
 	if (filePath == './') {
         filePath = './index.html';
     }
-	else if (/^\.\/[A-Z0-9]{6}$/.test(filePath) == true)
+	else if (/^\.\/twitter/.test(filePath) == true)
 	{
+		var tweet_msg = url.parse(req.url, true).query.msg;
+		tweet_msg = punycode.encode(tweet_msg);
 		
-		color = filePath.match(/[A-Z0-9]{6}/)[0];
-		filePath = './index.html';
-	}
-	else if (filePath == './sample.mp4')
-	{
-
-		let ctx2 = canvas2.getContext('2d');
-		 
-		console.log("mp4");
-		//動的動画生成
-		// 四角形描画
-		ctx2.fillStyle = 'rgba(0, 0, 64, 0.1)';  //RGBで入力するとき
-		ctx2.fillRect(0, 0, 100, 100);　　//塗りつぶす
-		
-		ctx2.fillStyle = 'rgba(255,0,0,1)';
-		ctx2.textAlign = 'left';
-		ctx2.font = '20px "GenShinGothic-Bold"';  // フォントサイズとさっき指定したフォント名
-		/*
-		(async () => {
-			const Encoder = await loadEncoder();
-
-			// Create a new encoder interface
-			let encoder = Encoder.create({
-			width: 100,
-			height: 100,
-			fps: 30
-			});
-			
-			var str = "";
-			for (var i = 0; i < 10; i++)
-			{
-				//画像加工
-				ctx.fillText(str, 0, 50);
-				str += i;
-				
-				//画像作製
-				
-				let rgba = ctx.getImageData(0, 0, canvas.width, canvas.height).data
-				encoder.encodeRGB(rgba);
-			}
-			
-			//const buffer = encoder.end();
-			let mp4 = Buffer.from(encoder.end()).toString('base64');
-			res.writeHead(200, { 'Content-Type': 'video/mp4' });
-			res.end(mp4, 'utf-8');
-		})();
-		*/
-		
-		// Create a new encoder interface
-		const Encoder = await loadEncoder();
-		let encoder = Encoder.create({
-		width: 100,
-		height: 100,
-		fps: 30
-		});
-		
-		let str = "";
-		for (let i = 0; i < 10; i++)
-		{
-			//画像加工
-			ctx2.fillText(str, 0, 50);
-			str += i;
-			
-			//画像作製
-			
-			let rgba = ctx2.getImageData(0, 0, canvas2.width, canvas2.height).data
-			encoder.encodeRGB(rgba);
-		
-		}
-		
-		let data = encoder.memory();
-		//const buffer = encoder.end();
-		
-		
-		let mp4 = Buffer.from(data).toString('base64');
-		
-		mp4 = 'data:video/mp4;base64,' + mp4;
-		
-		res.writeHead(200, { 'Content-Type': 'video/mp4' });
-		res.end(mp4, 'utf-8');
+		res.writeHead(302, {
+			'Location': './msg/' + tweet_msg
+		  });
+		  res.end();
+		  
 		
 		return;
+	}
+	else if (/^\.\/(msg|video)\/[A-Za-z0-9\-]+$/.test(filePath) == true)
+	{
+		var msg_list = filePath.split("/");
+		
+		//msg = filePath.match(/\/[A-Za-z0-9\-]+/)[0];
+		//console.log(msg_list);
+		msg = msg_list[2];//msg.substr(0,msg.length);
+		msg = punycode.decode(msg);
+		
+		console.log(msg);
+		
+		filePath = './index.html';
 	}
 	else if (/^\.\/img\/[A-Z0-9]{6}$/.test(filePath) == true)
 	{
@@ -269,53 +212,69 @@ const server = https.createServer(async function(req,res){
         else {
 			if(contentType == "text/html")
 			{
-				
 				var html = Buffer.from(content, 'base64').toString();
 				
 				html = html.replace(/hogehoge/g, color);
 				
 				///////////////////////////////////
-				let ctx2 = canvas2.getContext('2d');
-				 
-				//動的動画生成
-				// 四角形描画
-				ctx2.fillStyle = 'rgba(64, 128, 256, 1)';  //RGBで入力するとき
-				ctx2.fillRect(0, 0, 200, 200);　　//塗りつぶす
-				
-				ctx2.fillStyle = 'rgba(255,0,0,1)';
-				ctx2.textAlign = 'left';
-				ctx2.font = '20px "GenShinGothic-Bold"';  // フォントサイズとさっき指定したフォント名
-				
-				const Encoder = await loadEncoder();
-				let encoder = Encoder.create({
-				width: 200,
-				height: 200,
-				fps: 30
-				});
-				
-				let str = "";
-				for (let i = 0; i < 20; i++)
+				if (/xxxx/.test(html) == true)
 				{
-					//画像加工
-					ctx2.fillText(str, 0, 100);
-					str += i;
+					let ctx2 = canvas2.getContext('2d');
+				 
+					//動的動画生成
+					// 四角形描画
+					ctx2.fillStyle = 'rgba(64, 128, 256, 1)';  //RGBで入力するとき
+					ctx2.fillRect(0, 0, 200, 200);　　//塗りつぶす
 					
-					//画像作製
+					ctx2.fillStyle = 'rgba(255,0,0,1)';
+					ctx2.textAlign = 'left';
+					ctx2.font = '20px "GenShinGothic-Bold"';  // フォントサイズとさっき指定したフォント名
 					
-					let rgba = ctx2.getImageData(0, 0, canvas2.width, canvas2.height).data
-					encoder.encodeRGB(rgba);
-				
+					const duration = 2; // in seconds
+					const sizeInMBs = 2000; // desired output size
+					const sizeInKilobits = sizeInMBs * 8000; // conversion
+
+					// this is the value passed into the encoder
+					const kbps = sizeInKilobits / duration;
+					
+					const Encoder = await loadEncoder();
+					let encoder = Encoder.create({
+					width: 200,
+					height: 200,
+					fps: 3,
+					kbps: kbps,
+					quantizationParameter: 1,
+					qpMin: 1,
+					qpMax: 1,
+					groupOfPictures: 2,
+					vbvSize: 0
+					});
+					
+					let str = "";
+					for (let i = 0; i <= msg.length; i++)
+					{
+						//画像加工
+						ctx2.fillText(str, 0, 100);
+						str += msg.substr(i,1);
+						
+						//画像作製
+						
+						let rgba = ctx2.getImageData(0, 0, canvas2.width, canvas2.height).data
+						encoder.encodeRGB(rgba);
+					
+					}
+					
+					let data = encoder.end();
+					//const buffer = encoder.end();
+					
+					
+					let mp4 = Buffer.from(data).toString('base64');
+					
+					mp4 = 'data:video/mp4;base64,' + mp4;
+					
+					html = html.replace(/xxxx/g, mp4);
+					
 				}
-				
-				let data = encoder.end();
-				//const buffer = encoder.end();
-				
-				
-				let mp4 = Buffer.from(data).toString('base64');
-				
-				mp4 = 'data:video/mp4;base64,' + mp4;
-				
-				html = html.replace(/xxxx/g, mp4);
 				
 				//////////////////////////////////
 				
