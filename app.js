@@ -4,7 +4,6 @@ const path = require('path');
 
 var url = require('url');
 
-//const loadEncoder = require("mp4-h264");
 const loadEncoder = require("./mp4-h264/mp4-encoder.node.js");
 const port = process.env.PORT || 3001;
 
@@ -28,10 +27,7 @@ const lock = new AsyncLock();
 
 const punycode = require('punycode');
 
-//Ref: https://qiita.com/hachisukansw/items/633d1bf6baf008e82847
 function hsvToRgb(H,S,V) {
-  //https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
- 
   var C = V * S;
   var Hp = H / 60;
   var X = C * (1 - Math.abs(Hp % 2 - 1));
@@ -84,8 +80,6 @@ const server = https.createServer(async function(req,res){
 	{
 		var msg_list = filePath.split("/");
 		
-		//msg = filePath.match(/\/[A-Za-z0-9\-]+/)[0];
-		//console.log(msg_list);
 		msg = msg_list[2];//msg.substr(0,msg.length);
 		msg = punycode.decode(msg);
 		
@@ -119,49 +113,14 @@ const server = https.createServer(async function(req,res){
 			ctx.font = '20px "GenShinGothic-Bold"';  // フォントサイズとさっき指定したフォント名
 			
 			var str = "";
-				for (var i = 0; i < 10; i++)
-				{
-					//画像加工
-					ctx.fillText(str, 0, 50);
-					str += i;
-					
-					//画像作製
-					/*
-					const dataURL = canvas.toDataURL("image/jpeg", 0.75);
-					const imageBase64 = dataURL.split(',')[1];
-					const decodeURL = Buffer.from(imageBase64, 'base64').toString();//atob( imageBase64 );
-					const buffer = new Uint8Array(decodeURL.length);
-					for( let i = 0 ; i < decodeURL.length ; i ++)
-						buffer[i] = decodeURL.charCodeAt(i);
-					*/
-					//const rgba = ctx.getImageData(0, 0, canvas.width, canvas.height).data
-					//encoder.encodeRGB(rgba);
-					//for( let i = 0 ; i < decodeURL.length ; i ++)
-					//	buffer[i] = decodeURL.charCodeAt(i);
-				}	
-			/*
-			(async () => {
-				const Encoder = await loadEncoder();
-
-				// Create a new encoder interface
-				const encoder = Encoder.create({
-				width: 100,
-				height: 100,
-				fps: 30
-				});
+			for (var i = 0; i < 10; i++)
+			{
+				//画像加工
+				ctx.fillText(str, 0, 50);
+				str += i;
 				
+			}	
 				
-				const mp4 = encoder.end();
-				  
-				// Optionally convert to URL for <video> tag, download, etc...
-				//const url = URL.createObjectURL(new Blob([mp4], { type: "video/mp4" }));
-			})();
-			*/
-			
-			// Base64で出力も行うとき
-			// var base64 = canvas.toDataURL("image/png");
-			// console.log(base64);
-			 
 			const buffer = canvas.toBuffer('image/png')
 
 			
@@ -214,9 +173,9 @@ const server = https.createServer(async function(req,res){
 			{
 				var html = Buffer.from(content, 'base64').toString();
 				
-				html = html.replace(/hogehoge/g, color);
+				// 動的に文字置き換えテスト
+				//html = html.replace(/hogehoge/g, color);
 				
-				///////////////////////////////////
 				if (/xxxx/.test(html) == true)
 				{
 					let ctx2 = canvas2.getContext('2d');
@@ -265,7 +224,6 @@ const server = https.createServer(async function(req,res){
 					}
 					
 					let data = encoder.end();
-					//const buffer = encoder.end();
 					
 					
 					let mp4 = Buffer.from(data).toString('base64');
@@ -275,8 +233,6 @@ const server = https.createServer(async function(req,res){
 					html = html.replace(/xxxx/g, mp4);
 					
 				}
-				
-				//////////////////////////////////
 				
 				content = Buffer.from(html).toString('utf-8');
 			}
